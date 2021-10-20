@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net5.0-windows</TargetFramework>
+        <WarnOn>3390;$(WarnOn)</WarnOn>
+        <UseWindowsForms>true</UseWindowsForms>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Csv.fs"/>
+        <Compile Include="generateCode.fs"/>
+        <Compile Include="Program.fs"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="ClosedXML" Version="0.95.4"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="generateCode.fs"/>
+    </ItemGroup>
+
+</Project>
