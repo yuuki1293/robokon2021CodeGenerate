@@ -7,6 +7,9 @@ open ロボコン2021コード自動生成.generateCode
 
 let funName = "hoge"
 
+let ret x _ = x
+let (>>=) m f = fun x -> f (m x) ()
+
 [<STAThread>]
 [<EntryPoint>]
 let main argv =
@@ -14,4 +17,5 @@ let main argv =
     let rebirth_list = rebirths lists.Value
     let set_list = setl rebirth_list
     let s = generateFunction set_list funName
+    
     0
