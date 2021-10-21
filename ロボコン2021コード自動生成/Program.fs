@@ -5,6 +5,7 @@ open System
 open System.Windows.Forms
 open ロボコン2021コード自動生成.Csv
 open ロボコン2021コード自動生成.generateCode
+open ロボコン2021コード自動生成.CLanguages
 
 let funName = "hoge"
 
@@ -16,6 +17,7 @@ let main argv =
     let set_list = setl (ListCopy rebirth_list)
     let codeBlockFunction = generateFunction set_list funName
     let codeBlockArray = generateArray rebirth_list set_list
-    let completeProgram ="\n" + codeBlockFunction + "\n\n" + codeBlockArray
+    let completeProgram ="\n" + codeBlockFunction + "\n\n" + codeBlockArray + "\n"
+    WriteCppFile completeProgram
     Clipboard.SetText completeProgram
     0

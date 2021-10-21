@@ -8,17 +8,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Csv.fs"/>
-        <Compile Include="generateCode.fs"/>
-        <Compile Include="Program.fs"/>
+        <Compile Include="Csv.fs" />
+        <Compile Include="generateCode.fs" />
+        <Compile Include="CLanguages.fs" />
+        <Compile Include="Program.fs" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="ClosedXML" Version="0.95.4"/>
+        <PackageReference Include="ClosedXML" Version="0.95.4" />
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Include="generateCode.fs"/>
+        <Compile Include="generateCode.fs" />
     </ItemGroup>
 
 </Project>
