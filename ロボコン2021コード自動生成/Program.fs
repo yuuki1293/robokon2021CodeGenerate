@@ -15,9 +15,10 @@ let main argv =
     let lists = csvToList ()
     let rebirth_list = rebirths lists.Value
     let set_list = setl (ListCopy rebirth_list)
-    let codeBlockFunction = generateFunction set_list funName
+    let codeBlockStruct = generateStruct set_list funName
+    let codeBlockFunction = generateFunction  funName set_list.Count
     let codeBlockArray = generateArray rebirth_list set_list
-    let completeProgram ="\n" + codeBlockFunction + "\n\n" + codeBlockArray + "\n"
+    let completeProgram ="\n" + codeBlockStruct + "\n\n" + codeBlockFunction + "\n\n" + codeBlockArray + "\n"
     WriteCppFile completeProgram
     Clipboard.SetText completeProgram
     0
