@@ -7,7 +7,7 @@ open ロボコン2021コード自動生成.Csv
 open ロボコン2021コード自動生成.generateCode
 open ロボコン2021コード自動生成.CLanguages
 
-let funName = "hoge"
+let funName = "ashi"
 
 [<STAThread>]
 [<EntryPoint>]
