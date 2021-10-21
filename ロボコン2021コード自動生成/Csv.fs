@@ -7,6 +7,9 @@ open System.Linq
 open System.Text
 open System.Windows.Forms
 
+let ListCopy (list: List<List<int>>) :List<List<int>>=
+    list.Select(fun i -> i.Select(fun i->i).ToList()).ToList()    
+
 let csvReadLine (stream: OpenFileDialog) =
     File
         .ReadLines(stream.FileName, Encoding.GetEncoding("utf-8"))
@@ -43,7 +46,7 @@ let rebirths (values: IEnumerable<IEnumerable<int>>) =
                 .ToList())
         .ToList()
 
-let (==) (left: List<int>) (right: List<int>) =
+let (==) (left: List<'T>) (right: List<'T>) =
     [ 0 .. left.Count - 1 ]
         .Any(fun i -> not (left.[i].Equals right.[i]))
     |> not
@@ -58,9 +61,18 @@ let listRemove (list: List<List<int>>) =
     target
 
 let rec setl (list: List<List<int>>) =
-    let aList= List<List<int>> []
+    let aList = List<List<int>> []
 
     while not (list.Count = 0) do
         aList.Add(listRemove list)
 
     aList
+
+let listSearch (list: List<List<int>>) (value: List<int>) =
+    list.Select(fun i index -> if i == value then Some index else None)
+        .Where(fun i ->
+            match i with
+            | Some (_) -> true
+            | _ -> false)
+        .First()
+        .Value
