@@ -27,6 +27,8 @@ let csvReadLine (stream: OpenFileDialog) =
 
 let csvToList _ =
     let dialog = new OpenFileDialog()
+    dialog.Title <- "CSVファイルを選択してね"
+    dialog.Filter <- "CSVファイル(*.csv)|*.csv"
 
     if dialog.ShowDialog().Equals(DialogResult.OK) then
         csvReadLine (dialog)

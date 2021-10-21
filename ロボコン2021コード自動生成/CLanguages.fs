@@ -8,6 +8,8 @@ let comment = "/* ここに挿入してね */"
 
 let OpenCppFile =
     let dialog = new OpenFileDialog()
+    dialog.Title <- "cppファイルを選択してね"
+    dialog.Filter <- "cファイル(*.c;*.cpp)|*.c;*.cpp"
 
     if dialog.ShowDialog().Equals(DialogResult.OK) then
         Some dialog.FileName
