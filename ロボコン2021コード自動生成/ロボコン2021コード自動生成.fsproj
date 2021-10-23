@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="Monad.fs" />
         <Compile Include="config.fs" />
         <Compile Include="Csv.fs" />
         <Compile Include="generateCode.fs" />
@@ -16,11 +17,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="ClosedXML" Version="0.95.4" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Compile Include="generateCode.fs" />
     </ItemGroup>
 
 </Project>

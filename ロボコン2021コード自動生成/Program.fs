@@ -2,7 +2,10 @@
 module ロボコン2021コード自動生成.Program
 
 open System
+open System.Collections
+open System.Collections.Generic
 open System.Windows.Forms
+open ロボコン2021コード自動生成.Monad
 open ロボコン2021コード自動生成.Csv
 open ロボコン2021コード自動生成.generateCode
 open ロボコン2021コード自動生成.CLanguages
@@ -11,32 +14,29 @@ open ロボコン2021コード自動生成.config
 [<STAThread>]
 [<EntryPoint>]
 let main argv =
-    let lists = csvToList ()
-    let rebirth_list = rebirths lists
-    let set_list = setl (ListCopy rebirth_list)
-    let codeBlockStruct = generateStruct set_list funName
-    let codeBlockFunction = generateFunction funName set_list
-    let codeBlockArray = generateArray rebirth_list set_list
+    let objectFunc = 
+        either {
+            let! lists = csvToList
+            let rebirth_list = rebirths (unbox<IEnumerable<IEnumerable<int>>> lists)
+            let set_list = setl (ListCopy rebirth_list)
+            let codeBlockStruct = generateStruct set_list
+            let! codeBlockFunction = generateFunction funName set_list
+            let! codeBlockArray = generateArray rebirth_list set_list
 
-    let completeProgram =
-        if codeBlockArray.IsNone
-           || codeBlockFunction.IsNone
-           || codeBlockStruct.IsNone then
-            None
-        else
-            "\n"
-            + codeBlockStruct.Value
-            + "\n\n"
-            + codeBlockFunction.Value
-            + "\n\n"
-            + codeBlockArray.Value
-            + "\n" |> Some
+            let completeProgram =
+                    "\n"
+                    + codeBlockStruct
+                    + "\n\n"
+                    + unbox codeBlockFunction
+                    + "\n\n"
+                    + unbox codeBlockArray
+                    + "\n"
 
-    WriteCppFile completeProgram |> ignore
-    let Clip = if completeProgram.IsNone then fun _ ->
-                    MessageBox.Show("例外が発生しました","エラー",MessageBoxButtons.OK,MessageBoxIcon.Error) |> ignore
-                    ()
-                else
-                    fun _ -> Clipboard.SetText completeProgram.Value
-    Clip()
+            return WriteCppFile completeProgram :> obj
+        }
+    let Clip =
+        match objectFunc with
+        | Right _ -> MessageBox.Show("完了したよ！", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        | Left x -> MessageBox.Show($"例外\n{x}\nが発生したよ><", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error)
+
     0

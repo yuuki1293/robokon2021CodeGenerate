@@ -6,16 +6,13 @@ open System.IO
 open System.Linq
 open System.Text
 open System.Windows.Forms
+open ロボコン2021コード自動生成.Monad
 
-let ListCopy (list: Option<List<List<int>>>)=
-    if list.IsNone then
-        None
-    else
-        list
-            .Value
-            .Select(fun i -> i.Select(fun i -> i).ToList())
-            .ToList()
-        |> Some
+let ListCopy (list: List<List<int>>) =
+    list
+        .Select(fun i -> i.Select(fun i -> i).ToList())
+        .ToList()
+
 
 let csvReadLine (stream: OpenFileDialog) =
     try
@@ -31,37 +28,32 @@ let csvReadLine (stream: OpenFileDialog) =
                         | (true, _) -> true
                         | _ -> false)
                     .Select(fun s -> Int32.Parse s))
-        |> Some
+       :> obj |> Right
     with
-    | _ -> None
+    | x -> Left (x.ToString())
 
-let csvToList _ =
+let csvToList =
     let dialog = new OpenFileDialog()
     dialog.Title <- "CSVファイルを選択してね"
     dialog.Filter <- "CSVファイル(*.csv)|*.csv"
 
     if dialog.ShowDialog().Equals(DialogResult.OK) then
-        csvReadLine (dialog)
+        csvReadLine dialog
     else
-        None
+        Left "ダイアログが正常に閉じられなかったよ"
 
-let rebirths (values: Option<IEnumerable<IEnumerable<int>>>) =
-    if values.IsNone then
-        None
-    else
-        Enumerable
-            .Range(0, values.Value.Max(fun c -> c.Count()))
-            .Select(fun i ->
-                values
-                    .Value
-                    .Select(fun c ->
-                        if i < c.Count() then
-                            c.ElementAt(i)
-                        else
-                            0)
-                    .ToList())
-            .ToList()
-        |> Some
+let rebirths (values: IEnumerable<IEnumerable<int>>) =
+    Enumerable
+        .Range(0, values.Max(fun c -> c.Count()))
+        .Select(fun i ->
+            values
+                .Select(fun c ->
+                    if i < c.Count() then
+                        c.ElementAt(i)
+                    else
+                        0)
+                .ToList())
+        .ToList()
 
 let (==) (left: List<'T>) (right: List<'T>) =
     [ 0 .. left.Count - 1 ]
@@ -77,16 +69,13 @@ let listRemove (list: List<List<int>>) =
 
     target
 
-let rec setl (list: Option<List<List<int>>>) =
-    if list.IsNone then
-        None
-    else
-        let aList = List<List<int>> []
+let rec setl (list: List<List<int>>) =
+    let aList = List<List<int>> []
 
-        while not (list.Value.Count = 0) do
-            aList.Add(listRemove list.Value)
+    while not (list.Count = 0) do
+        aList.Add(listRemove list)
 
-        aList |> Some
+    aList
 
 let listSearch (list: List<List<int>>) (value: List<int>) =
     list.Select(fun i index -> if i == value then Some index else None)

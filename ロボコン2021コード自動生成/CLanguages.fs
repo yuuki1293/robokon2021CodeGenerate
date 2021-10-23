@@ -4,53 +4,59 @@ open System
 open System.IO
 open System.Windows.Forms
 open ロボコン2021コード自動生成.config
+open ロボコン2021コード自動生成.Monad
 
 let OpenCppFile =
-    let dialog = new OpenFileDialog()
-    dialog.Title <- "cppファイルを選択してね"
-    dialog.Filter <- "cファイル(*.c;*.cpp)|*.c;*.cpp"
+    either {
+        let dialog = new OpenFileDialog()
+        dialog.Title <- "cppファイルを選択してね"
+        dialog.Filter <- "cファイル(*.c;*.cpp)|*.c;*.cpp"
 
-    if dialog.ShowDialog().Equals(DialogResult.OK) then
-        Some dialog.FileName
-    else
-        None
+        let! path =
+            if dialog.ShowDialog().Equals(DialogResult.OK) then
+                Right(dialog.FileName :> obj)
+            else
+                Left "ダイアログが正常に閉じられなかったよ！"
+
+        return path
+    }
 
 let SearchFlag (text: string) =
-    let beginInsert =
-        match text.IndexOf comment with
-        | -1 -> None
-        | x -> Some(x + comment.Length)
+    either {
+        let! beginInsert =
+            match text.IndexOf comment with
+            | -1 -> Left $"{comment} が見つからなかったよ！"
+            | x -> Right(x + comment.Length :> obj)
 
-    if beginInsert.IsNone then
-        (None, None)
-    else
-        let endInsert =
+        let! endInsert =
             match text.LastIndexOf comment with
-            | -1 -> None
-            | x -> Some(x - beginInsert.Value)
+            | x when x.Equals beginInsert -> Left $"{comment} が1つしか見つからなかったよ！"
+            | x -> Right(x - unbox<int> beginInsert :> obj)
 
-        (beginInsert, endInsert)
+        return [unbox<int> beginInsert;unbox<int> endInsert] :> obj
+    }
 
-let WriteCppFile (text: Option<string>) =
-    if text.IsNone then
-        None
-    else
-        let filePath = OpenCppFile
+let WriteCppFile (text: string) =
+    either {
+        let! filePath = OpenCppFile
 
-        if filePath.IsNone then
-            None
-        else
-            let readCode = File.ReadAllText(filePath.Value)
-            let (beginInsert, count) = SearchFlag readCode
+        let! readCode =
+            try
+                Right(File.ReadAllText(unbox filePath) :> obj)
+            with
+            | x -> Left(x.ToString())
+        let code = unbox<string> readCode
+        let! searchIndex = SearchFlag code
+        
+        let searchIndexList:List<int> = unbox searchIndex
+        let beginInsert=searchIndexList.[0]
+        let count = searchIndexList.[1]
+        
+        let removedCode =
+            code.Remove(beginInsert, count)
 
-            if count.IsNone then
-                None
-            else
-                let removedCode =
-                    readCode.Remove(beginInsert.Value, count.Value)
+        let insertedCode =
+            removedCode.Insert(beginInsert, text)
 
-                let insertedCode =
-                    removedCode.Insert(beginInsert.Value, text.Value)
-
-                File.WriteAllText(filePath.Value, insertedCode)
-                |> Some
+        return File.WriteAllText(unbox filePath, insertedCode) :> obj
+    }
