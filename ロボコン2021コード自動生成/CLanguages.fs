@@ -3,8 +3,7 @@
 open System
 open System.IO
 open System.Windows.Forms
-
-let comment = "/* ここに挿入してね */"
+open ロボコン2021コード自動生成.config
 
 let OpenCppFile =
     let dialog = new OpenFileDialog()

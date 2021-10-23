@@ -6,8 +6,7 @@ open System.Windows.Forms
 open ロボコン2021コード自動生成.Csv
 open ロボコン2021コード自動生成.generateCode
 open ロボコン2021コード自動生成.CLanguages
-
-let funName = "ashi"
+open ロボコン2021コード自動生成.config
 
 [<STAThread>]
 [<EntryPoint>]

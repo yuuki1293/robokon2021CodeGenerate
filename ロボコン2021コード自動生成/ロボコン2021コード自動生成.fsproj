@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="config.fs" />
         <Compile Include="Csv.fs" />
         <Compile Include="generateCode.fs" />
         <Compile Include="CLanguages.fs" />
