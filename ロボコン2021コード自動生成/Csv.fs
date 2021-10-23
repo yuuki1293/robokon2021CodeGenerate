@@ -7,23 +7,33 @@ open System.Linq
 open System.Text
 open System.Windows.Forms
 
-let ListCopy (list: List<List<int>>) :List<List<int>>=
-    list.Select(fun i -> i.Select(fun i->i).ToList()).ToList()    
+let ListCopy (list: Option<List<List<int>>>)=
+    if list.IsNone then
+        None
+    else
+        list
+            .Value
+            .Select(fun i -> i.Select(fun i -> i).ToList())
+            .ToList()
+        |> Some
 
 let csvReadLine (stream: OpenFileDialog) =
-    File
-        .ReadLines(stream.FileName, Encoding.GetEncoding("utf-8"))
-        .Select(fun s ->
-            s
-                .Replace("{", "")
-                .Replace("}", "")
-                .Split(",")
-                .Where(fun s ->
-                    match Int32.TryParse s with
-                    | (true, _) -> true
-                    | _ -> false)
-                .Select(fun s -> Int32.Parse s))
-    |> Some
+    try
+        File
+            .ReadLines(stream.FileName, Encoding.GetEncoding("utf-8"))
+            .Select(fun s ->
+                s
+                    .Replace("{", "")
+                    .Replace("}", "")
+                    .Split(",")
+                    .Where(fun s ->
+                        match Int32.TryParse s with
+                        | (true, _) -> true
+                        | _ -> false)
+                    .Select(fun s -> Int32.Parse s))
+        |> Some
+    with
+    | _ -> None
 
 let csvToList _ =
     let dialog = new OpenFileDialog()
@@ -35,18 +45,23 @@ let csvToList _ =
     else
         None
 
-let rebirths (values: IEnumerable<IEnumerable<int>>) =
-    Enumerable
-        .Range(0, values.Max(fun c -> c.Count()))
-        .Select(fun i ->
-            values
-                .Select(fun c ->
-                    if i < c.Count() then
-                        c.ElementAt(i)
-                    else
-                        0)
-                .ToList())
-        .ToList()
+let rebirths (values: Option<IEnumerable<IEnumerable<int>>>) =
+    if values.IsNone then
+        None
+    else
+        Enumerable
+            .Range(0, values.Value.Max(fun c -> c.Count()))
+            .Select(fun i ->
+                values
+                    .Value
+                    .Select(fun c ->
+                        if i < c.Count() then
+                            c.ElementAt(i)
+                        else
+                            0)
+                    .ToList())
+            .ToList()
+        |> Some
 
 let (==) (left: List<'T>) (right: List<'T>) =
     [ 0 .. left.Count - 1 ]
@@ -62,13 +77,16 @@ let listRemove (list: List<List<int>>) =
 
     target
 
-let rec setl (list: List<List<int>>) =
-    let aList = List<List<int>> []
+let rec setl (list: Option<List<List<int>>>) =
+    if list.IsNone then
+        None
+    else
+        let aList = List<List<int>> []
 
-    while not (list.Count = 0) do
-        aList.Add(listRemove list)
+        while not (list.Value.Count = 0) do
+            aList.Add(listRemove list.Value)
 
-    aList
+        aList |> Some
 
 let listSearch (list: List<List<int>>) (value: List<int>) =
     list.Select(fun i index -> if i == value then Some index else None)

@@ -9,20 +9,25 @@ open ロボコン2021コード自動生成.Csv
 let listToStringFunction (list: List<int>) =
     $"""{String.Join(",", list.Select(fun i -> i.ToString()))}"""
 
-let generateStruct (list: List<List<int>>) funName =
-    let functionArray =
-        list
-            .Select(fun i index -> $"int data{index}[24] = {{{listToStringFunction i}}};")
-            .ToArray()
+let generateStruct (list: Option<List<List<int>>>) funName =
+    if list.IsNone then
+        None
+    else
+        let functionArray =
+            list
+                .Value
+                .Select(fun i index -> $"int data{index}[24] = {{{listToStringFunction i}}};")
+                .ToArray()
 
-    String.Join(Environment.NewLine, functionArray)
+        String.Join(Environment.NewLine, functionArray) |> Some
 
-let generateFunction funName count =
+let generateFunction funName (count:Option<List<List<int>>>) =
+    if count.IsNone then None else
     String.Join(
         "\n",
-        [ 0 .. count - 1 ]
+        [ 0 .. count.Value.Count - 1 ]
             .Select(fun i -> $"void autoFunc{i}(){{{funName}(data{i});}}")
-    )
+    ) |> Some
 
 let (/%) (left: int) (right: int) =
     left / right
@@ -46,10 +51,11 @@ let joinlist (list: List<List<int>>) (set_list: List<List<int>>) num =
     let fin = "};"
     define + inner + fin
 
-let generateArray (rebirth_list: List<List<int>>) (set_list: List<List<int>>) =
+let generateArray (rebirth_list: Option<List<List<int>>>) (set_list: Option<List<List<int>>>) =
+    if rebirth_list.IsNone || set_list.IsNone then None else
     let funcs =
-        [ 1 .. (rebirth_list.Count / 30) ]
-            .Select(fun i -> rebirth_list.GetRange(30 * (i - 1), 30))
-            .Select(fun i index -> joinlist i set_list index)
+        [ 1 .. (rebirth_list.Value.Count / 30) ]
+            .Select(fun i -> rebirth_list.Value.GetRange(30 * (i - 1), 30))
+            .Select(fun i index -> joinlist i set_list.Value index)
 
-    String.Join("\n", funcs)
+    String.Join("\n", funcs) |> Some

@@ -22,18 +22,36 @@ let SearchFlag (text: string) =
         | -1 -> None
         | x -> Some(x + comment.Length)
 
-    let endInsert =
-        match text.LastIndexOf comment with
-        | -1 -> None
-        | x -> Some (x - beginInsert.Value)
+    if beginInsert.IsNone then
+        (None, None)
+    else
+        let endInsert =
+            match text.LastIndexOf comment with
+            | -1 -> None
+            | x -> Some(x - beginInsert.Value)
 
-    (beginInsert, endInsert)
+        (beginInsert, endInsert)
 
-let WriteCppFile text =
-    let filePath = OpenCppFile
-    let readCode = File.ReadAllText(filePath.Value)
-    let (beginInsert, count) = SearchFlag readCode
-    let removedCode =
-        readCode.Remove(beginInsert.Value, count.Value)
-    let insertedCode = removedCode.Insert(beginInsert.Value,text)
-    File.WriteAllText(filePath.Value,insertedCode)
+let WriteCppFile (text: Option<string>) =
+    if text.IsNone then
+        None
+    else
+        let filePath = OpenCppFile
+
+        if filePath.IsNone then
+            None
+        else
+            let readCode = File.ReadAllText(filePath.Value)
+            let (beginInsert, count) = SearchFlag readCode
+
+            if count.IsNone then
+                None
+            else
+                let removedCode =
+                    readCode.Remove(beginInsert.Value, count.Value)
+
+                let insertedCode =
+                    removedCode.Insert(beginInsert.Value, text.Value)
+
+                File.WriteAllText(filePath.Value, insertedCode)
+                |> Some
