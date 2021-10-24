@@ -18,19 +18,16 @@ let generateStruct (list: List<List<int>>) =
     String.Join(Environment.NewLine, functionArray)
 
 let generateFunction funName (count: List<List<int>>) =
-    match funName with
-    | "" -> Left "関数名が指定されてないよ!"
-    | _ ->
-        String.Join(
-            "\n",
-            [ 0 .. count.Count - 1 ]
-                .Select(fun i -> $"void autoFunc{i}(){{{funName}(data{i});}}")
-        )
-        :> obj
-        |> Right
+    String.Join(
+        "\n",
+        [ 0 .. count.Count - 1 ]
+            .Select(fun i -> $"void autoFunc{i}(){{{funName}(data{i});}}")
+    )
+    :> obj
+    |> Right
 
 
-let joinlist (list: List<List<int>>) (set_list: List<List<int>>) num =
+let joinList (list: List<List<int>>) (set_list: List<List<int>>) num =
     let define = $"void (*funcs{num}[])(void)={{"
 
     let inner =
@@ -53,6 +50,6 @@ let generateArray (rebirth_list: List<List<int>>) (set_list: List<List<int>>) =
         let funcs =
             [ 1 .. (rebirth_list.Count / 30) ]
                 .Select(fun i -> rebirth_list.GetRange(30 * (i - 1), 30))
-                .Select(fun i index -> joinlist i set_list index)
+                .Select(fun i index -> joinList i set_list index)
 
         String.Join("\n", funcs) :> obj |> Right

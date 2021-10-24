@@ -33,7 +33,10 @@ let SearchFlag (text: string) =
             | x when x.Equals beginInsert -> Left $"{comment} が1つしか見つからなかったよ！"
             | x -> Right(x - unbox<int> beginInsert :> obj)
 
-        return [unbox<int> beginInsert;unbox<int> endInsert] :> obj
+        return
+            [ unbox<int> beginInsert
+              unbox<int> endInsert ]
+            :> obj
     }
 
 let WriteCppFile (text: string) =
@@ -45,18 +48,17 @@ let WriteCppFile (text: string) =
                 Right(File.ReadAllText(unbox filePath) :> obj)
             with
             | x -> Left(x.ToString())
+
         let code = unbox<string> readCode
         let! searchIndex = SearchFlag code
-        
-        let searchIndexList:List<int> = unbox searchIndex
-        let beginInsert=searchIndexList.[0]
-        let count = searchIndexList.[1]
-        
-        let removedCode =
-            code.Remove(beginInsert, count)
 
-        let insertedCode =
-            removedCode.Insert(beginInsert, text)
+        let searchIndexList: List<int> = unbox searchIndex
+        let beginInsert = searchIndexList.[0]
+        let count = searchIndexList.[1]
+
+        let removedCode = code.Remove(beginInsert, count)
+
+        let insertedCode = removedCode.Insert(beginInsert, text)
 
         return File.WriteAllText(unbox filePath, insertedCode) :> obj
     }

@@ -30,6 +30,7 @@ let csvReadLine (stream: OpenFileDialog) =
                     .Select(fun s -> Int32.Parse s))
        :> obj |> Right
     with
+    | :? IOException -> Left "csvファイルが開けなかったよ。別のプロセスが使ってるのかも！"
     | x -> Left (x.ToString())
 
 let csvToList =

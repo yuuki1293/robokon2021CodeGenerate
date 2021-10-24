@@ -43,7 +43,7 @@ let Eitherのテスト () =
 
 [<Test>]
 let オブジェクト型をリストに変換するテスト () =
-    let someList = [1;2] :> obj
-    let list:List<int> = unbox someList
+    let someList = [ 1; 2 ] :> obj
+    let list: List<int> = unbox someList
     printfn $"%A{list}"
     Assert.Pass()

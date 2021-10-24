@@ -7,7 +7,7 @@ type Either<'T, 'U> =
 
 let ret x = Right x
 
-let (>>=) (m : ^a when ^a:>Either<'T,'U>) f =
+let (>>=) (m: Either<'T, 'U>) f =
     match m with
     | Right x -> f x
     | Left _ -> m
